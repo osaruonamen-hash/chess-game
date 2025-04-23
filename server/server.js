@@ -8,11 +8,13 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // React default port
+    origin: [
+      "http://localhost:3000", 
+      "https://chess-game-5.onrender.com"
+    ],
     methods: ["GET", "POST"],
   },
 });
-
 app.use(cors());
 app.use(express.json());
 
