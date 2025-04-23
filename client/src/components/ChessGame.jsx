@@ -1,3 +1,4 @@
+// ChessGame.jsx
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 
@@ -7,8 +8,6 @@ const ChessGame = () => {
   const [roomId, setRoomId] = useState(""); // Track the current room ID
   const [move, setMove] = useState(""); // Track player's move
   const [chatMessage, setChatMessage] = useState(""); // Track chat message
-  const [opponentMove, setOpponentMove] = useState(""); // Track opponent's move
-  const [gameBoard, setGameBoard] = useState([/* Initialize your chessboard state */]);
 
   // Handle joining the game room
   const joinGame = (room) => {
@@ -19,15 +18,13 @@ const ChessGame = () => {
   // Handle making a move
   const makeMove = () => {
     socket.emit("move", { roomId, move });
-    // Optionally update the game state locally after making the move
   };
 
   // Listen for opponent's move and update the game state
   useEffect(() => {
     socket.on("opponent_move", (opponentMove) => {
       console.log("Opponent made a move:", opponentMove);
-      setOpponentMove(opponentMove); // Store the opponent's move
-      // You could update the game state with opponent's move here
+      // Update the game state with the opponent's move
     });
 
     // Listen for chat messages
@@ -74,16 +71,7 @@ const ChessGame = () => {
       <button onClick={sendChatMessage}>Send Chat</button>
 
       {/* Display opponent's move */}
-      <div id="opponent-move">
-        Opponent's Move: {opponentMove ? opponentMove : "Waiting for opponent's move..."}
-      </div>
-
-      {/* Display the game board */}
-      <div id="game-board">
-        {/* You can integrate a chessboard UI here */}
-        {/* Example (using react-chessboard or similar): */}
-        {/* <Chessboard gameState={gameBoard} onMove={makeMove} /> */}
-      </div>
+      <div id="opponent-move">Opponent's Move: {/* Display opponent's move here */}</div>
     </div>
   );
 };
