@@ -1,3 +1,4 @@
+import './App.css';  // Make sure this import is at the top of your main component
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
