@@ -58,68 +58,154 @@ const ChessGame = () => {
   }, [game]);
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
-      <h1>Multiplayer Chess Game</h1>
-
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "20px",
+      position: "relative",
+    }}>
       {/* Room Join Controls */}
       {!joinedRoom && (
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{
+          background: "white",
+          padding: "30px",
+          borderRadius: "20px",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          textAlign: "center",
+        }}>
+          <h2>Join a Room</h2>
           <input
             type="text"
             placeholder="Enter Room ID"
             value={roomInput}
             onChange={(e) => setRoomInput(e.target.value)}
-            style={{ padding: "8px", marginRight: "10px" }}
+            style={{
+              padding: "10px",
+              borderRadius: "10px",
+              border: "1px solid #ccc",
+              marginBottom: "10px",
+              width: "200px",
+            }}
           />
-          <button onClick={() => joinGame(roomInput)}>Join Game</button>
+          <br />
+          <button
+            onClick={() => joinGame(roomInput)}
+            style={{
+              padding: "10px 20px",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
+          >
+            Join Game
+          </button>
         </div>
       )}
 
-      {/* Chat Box */}
+      {/* Game and Chat UI */}
       {joinedRoom && (
-        <div>
-          <div style={{ maxHeight: "200px", overflowY: "scroll", marginBottom: "10px" }}>
-            {chatMessages.map((msg, index) => (
-              <div key={index} style={{ padding: "5px", borderBottom: "1px solid #ccc" }}>
-                {msg}
-              </div>
-            ))}
-          </div>
-          <div style={{ marginBottom: "10px" }}>
-            <input
-              type="text"
-              placeholder="Type a message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              style={{ padding: "8px", width: "300px", marginRight: "10px" }}
+        <div style={{ display: "flex", gap: "30px" }}>
+          {/* Chessboard Card */}
+          <div style={{
+            background: "#1e1e1e",
+            borderRadius: "20px",
+            padding: "20px",
+            boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.3)",
+            position: "relative",
+          }}>
+            <div style={{ color: "white", marginBottom: "10px" }}>
+              Room: <strong>{roomId}</strong>
+            </div>
+            <Chessboard
+              position={game.fen()}
+              onPieceDrop={(sourceSquare, targetSquare) => {
+                if (!roomId) {
+                  alert("Join a game room first!");
+                  return false;
+                }
+                const move = {
+                  from: sourceSquare,
+                  to: targetSquare,
+                  promotion: "q",
+                };
+                return makeAMove(move);
+              }}
+              boardWidth={400}
+              boardOrientation="white"
+              customDarkSquareStyle={{ backgroundColor: "#1a1a1a" }}
+              customLightSquareStyle={{ backgroundColor: "#b9c2c9" }}
             />
-            <button onClick={sendMessage}>Send</button>
+          </div>
+
+          {/* Chat Card */}
+          <div style={{
+            background: "#ffffff",
+            borderRadius: "20px",
+            padding: "20px",
+            width: "300px",
+            maxHeight: "500px",
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.2)",
+          }}>
+            <div style={{
+              flexGrow: 1,
+              overflowY: "auto",
+              marginBottom: "10px",
+              paddingRight: "10px",
+            }}>
+              {chatMessages.map((msg, index) => (
+                <div key={index} style={{
+                  background: index % 2 === 0 ? "#e0f7fa" : "#f1f8e9",
+                  padding: "8px 12px",
+                  borderRadius: "10px",
+                  marginBottom: "8px",
+                  alignSelf: "flex-start",
+                  maxWidth: "80%",
+                }}>
+                  {msg}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex" }}>
+              <input
+                type="text"
+                placeholder="Type a message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                style={{
+                  flexGrow: 1,
+                  padding: "10px",
+                  borderRadius: "10px",
+                  border: "1px solid #ccc",
+                }}
+              />
+              <button
+                onClick={sendMessage}
+                style={{
+                  marginLeft: "10px",
+                  padding: "10px 15px",
+                  borderRadius: "10px",
+                  border: "none",
+                  backgroundColor: "#2196f3",
+                  color: "white",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Send
+              </button>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Room Info */}
-      {joinedRoom && <p>You are in Room: <strong>{roomId}</strong></p>}
-
-      {/* Chessboard */}
-      <Chessboard
-        position={game.fen()}
-        onPieceDrop={(sourceSquare, targetSquare) => {
-          if (!roomId) {
-            alert("Join a game room first!");
-            return false;
-          }
-
-          const move = {
-            from: sourceSquare,
-            to: targetSquare,
-            promotion: "q",
-          };
-
-          return makeAMove(move);
-        }}
-        boardWidth={400}
-      />
     </div>
   );
 };
