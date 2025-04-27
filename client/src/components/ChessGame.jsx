@@ -58,44 +58,58 @@ const ChessGame = () => {
   }, [game]);
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
-      <h1>Multiplayer Chess Game</h1>
+<div className="container">
+  <h1>Chess Game</h1>
 
-      {/* Room Join Controls */}
-      {!joinedRoom && (
-        <div style={{ marginBottom: "20px" }}>
-          <input
-            type="text"
-            placeholder="Enter Room ID"
-            value={roomInput}
-            onChange={(e) => setRoomInput(e.target.value)}
-            style={{ padding: "8px", marginRight: "10px" }}
-          />
-          <button onClick={() => joinGame(roomInput)}>Join Game</button>
-        </div>
-      )}
+  {/* Chessboard component here */}
+  <div className="chess-board">
+    <Chessboard
+      position={game.fen()}
+      onPieceDrop={handlePieceDrop}
+    />
+  </div>
 
-      {/* Chat Box */}
-      {joinedRoom && (
-        <div>
-          <div style={{ maxHeight: "200px", overflowY: "scroll", marginBottom: "10px" }}>
-            {chatMessages.map((msg, index) => (
-              <div key={index} style={{ padding: "5px", borderBottom: "1px solid #ccc" }}>
-                {msg}
-              </div>
-            ))}
-          </div>
-          <div style={{ marginBottom: "10px" }}>
-            <input
-              type="text"
-              placeholder="Type a message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              style={{ padding: "8px", width: "300px", marginRight: "10px" }}
-            />
-            <button onClick={sendMessage}>Send</button>
-          </div>
-        </div>
+  {/* Chat Section */}
+  <div className="chat-container">
+    <ul>
+      {chatMessages.map((msg, index) => (
+        <li key={index}>{msg}</li>
+      ))}
+    </ul>
+    <input
+      type="text"
+      className="chat-input"
+      value={chatInput}
+      onChange={e => setChatInput(e.target.value)}
+      placeholder="Type a message"
+    />
+    <button onClick={sendChatMessage} className="button">Send</button>
+  </div>
+
+  {/* Leaderboard Section */}
+  <div className="leaderboard-container">
+    <h2>Leaderboard</h2>
+    <ul className="leaderboard-list">
+      {leaderboard.map((player, index) => (
+        <li key={index}>
+          {player.username} <span>Wins: {player.wins} - Losses: {player.losses}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Game History Section */}
+  <div className="history-container">
+    <h3>Game History</h3>
+    <ul className="history-list">
+      {gameHistory.map((game, index) => (
+        <li key={index}>
+          {game.players.join(" vs ")} - Winner: {game.winner}
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
       )}
 
       {/* Room Info */}
