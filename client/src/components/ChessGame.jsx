@@ -163,16 +163,19 @@ const ChessGame = () => {
             }}>
               {chatMessages.map((msg, index) => (
                 <div key={index} style={{
-                  background: index % 2 === 0 ? "#e0f7fa" : "#f1f8e9",
-                  padding: "8px 12px",
-                  borderRadius: "10px",
-                  marginBottom: "8px",
-                  alignSelf: "flex-start",
-                  maxWidth: "80%",
-                }}>
-                  {msg}
-                </div>
-              ))}
+  background: index % 2 === 0 ? "#00bcd4" : "#4caf50", // brighter bubble colors
+  color: "white", // <<<<<< add this line
+  padding: "10px 14px",
+  borderRadius: "15px",
+  marginBottom: "10px",
+  alignSelf: "flex-start",
+  maxWidth: "80%",
+  fontSize: "14px",
+  lineHeight: "1.4",
+}}>
+  {msg}
+</div>
+        ))}
             </div>
             <div style={{ display: "flex" }}>
               <input
@@ -195,7 +198,7 @@ const ChessGame = () => {
                   borderRadius: "10px",
                   border: "none",
                   backgroundColor: "#2196f3",
-                  color: "black",
+                  color: "white",
                   fontWeight: "bold",
                   cursor: "pointer",
                 }}
