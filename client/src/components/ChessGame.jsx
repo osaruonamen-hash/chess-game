@@ -1,137 +1,211 @@
-// src/components/ChessGame.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { Chess } from 'chess.js';
+// client/src/components/ChessGame.jsx
+import React, { useState, useEffect } from "react";
+import { Chessboard } from "react-chessboard";
+import io from "socket.io-client";
+import { Chess } from "chess.js";
+
+const socket = io("https://chess-game-6.onrender.com");
 
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
-  const [selectedSquare, setSelectedSquare] = useState(null);
-  const [lastMove, setLastMove] = useState(null);
-  const [whiteTime, setWhiteTime] = useState(300); // 5 minutes = 300 seconds
-  const [blackTime, setBlackTime] = useState(300);
-  const timerRef = useRef(null);
+  const [roomId, setRoomId] = useState("");
+  const [joinedRoom, setJoinedRoom] = useState(false);
+  const [roomInput, setRoomInput] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [message, setMessage] = useState("");
 
-  const board = game.board(); // 2D array: [row][col] -> piece or null
-  const turn = game.turn(); // 'w' or 'b'
-
-  const startTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-
-    timerRef.current = setInterval(() => {
-      if (turn === 'w') {
-        setWhiteTime((time) => {
-          if (time <= 0) {
-            clearInterval(timerRef.current);
-            alert('Black wins by timeout!');
-            return 0;
-          }
-          return time - 1;
-        });
-      } else {
-        setBlackTime((time) => {
-          if (time <= 0) {
-            clearInterval(timerRef.current);
-            alert('White wins by timeout!');
-            return 0;
-          }
-          return time - 1;
-        });
-      }
-    }, 1000);
+  const joinGame = (room) => {
+    if (room.trim() === "") {
+      alert("Please enter a room ID");
+      return;
+    }
+    setRoomId(room);
+    socket.emit("join_game", room);
+    setJoinedRoom(true);
   };
 
-  useEffect(() => {
-    startTimer();
-    return () => clearInterval(timerRef.current);
-  }, [turn]);
+  const makeAMove = (move) => {
+    const result = game.move(move);
+    if (result) {
+      setGame(new Chess(game.fen()));
+      socket.emit("move", { roomId, move });
+    }
+    return result;
+  };
 
-  const handleSquareClick = (row, col) => {
-    const square = 'abcdefgh'[col] + (8 - row);
-
-    if (selectedSquare) {
-      const move = { from: selectedSquare, to: square, promotion: 'q' };
-      const result = game.move(move);
-
-      if (result) {
-        setGame(new Chess(game.fen()));
-        setLastMove({ from: selectedSquare, to: square });
-        setSelectedSquare(null);
-      } else {
-        setSelectedSquare(null);
-      }
-    } else {
-      const clickedPiece = board[row][col];
-      if (clickedPiece && clickedPiece.color === turn) {
-        setSelectedSquare(square);
-      }
+  const sendMessage = () => {
+    if (message.trim()) {
+      socket.emit("chat", { roomId, message });
+      setMessage("");
     }
   };
 
-  const formatTime = (seconds) => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min}:${sec.toString().padStart(2, '0')}`;
-  };
+  useEffect(() => {
+    socket.on("opponent_move", (move) => {
+      const updatedGame = new Chess(game.fen());
+      updatedGame.move(move);
+      setGame(updatedGame);
+    });
+
+    socket.on("receive_chat", (message) => {
+      setChatMessages((prevMessages) => [...prevMessages, message]);
+    });
+
+    return () => {
+      socket.off("opponent_move");
+      socket.off("receive_chat");
+    };
+  }, [game]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
-      
-      {/* Top Player */}
-      <div style={{ marginBottom: '10px', fontSize: '20px', fontWeight: 'bold' }}>
-        Black ♚ - {formatTime(blackTime)}
-      </div>
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "20px",
+      position: "relative",
+    }}>
+      {/* Room Join Controls */}
+      {!joinedRoom && (
+        <div style={{
+          background: "white",
+          padding: "30px",
+          borderRadius: "20px",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          textAlign: "center",
+        }}>
+          <h2>Join a Room</h2>
+          <input
+            type="text"
+            placeholder="Enter Room ID"
+            value={roomInput}
+            onChange={(e) => setRoomInput(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "10px",
+              border: "1px solid #ccc",
+              marginBottom: "10px",
+              width: "200px",
+            }}
+          />
+          <br />
+          <button
+            onClick={() => joinGame(roomInput)}
+            style={{
+              padding: "10px 20px",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
+              marginTop: "10px",
+            }}
+          >
+            Join Game
+          </button>
+        </div>
+      )}
 
-      {/* Chessboard */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(8, 70px)',
-        gridTemplateRows: 'repeat(8, 70px)',
-        border: '5px solid #654321',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-      }}>
-        {board.map((rowArr, rowIndex) =>
-          rowArr.map((piece, colIndex) => {
-            const squareName = 'abcdefgh'[colIndex] + (8 - rowIndex);
-            const isLight = (rowIndex + colIndex) % 2 === 0;
-            const backgroundColor = isLight ? '#eedab8' : '#a67c52';
-            const isSelected = selectedSquare === squareName;
-            const isLastMove = lastMove && (lastMove.from === squareName || lastMove.to === squareName);
+      {/* Game and Chat UI */}
+      {joinedRoom && (
+        <div style={{ display: "flex", gap: "30px" }}>
+          {/* Chessboard Card */}
+          <div style={{
+            background: "#1e1e1e",
+            borderRadius: "20px",
+            padding: "20px",
+            boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.3)",
+            position: "relative",
+          }}>
+            <div style={{ color: "white", marginBottom: "10px" }}>
+              Room: <strong>{roomId}</strong>
+            </div>
+            <Chessboard
+              position={game.fen()}
+              onPieceDrop={(sourceSquare, targetSquare) => {
+                if (!roomId) {
+                  alert("Join a game room first!");
+                  return false;
+                }
+                const move = {
+                  from: sourceSquare,
+                  to: targetSquare,
+                  promotion: "q",
+                };
+                return makeAMove(move);
+              }}
+              boardWidth={400}
+              boardOrientation="white"
+              customDarkSquareStyle={{ backgroundColor: "#1a1a1a" }}
+              customLightSquareStyle={{ backgroundColor: "#b9c2c9" }}
+            />
+          </div>
 
-            return (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                onClick={() => handleSquareClick(rowIndex, colIndex)}
+          {/* Chat Card */}
+          <div style={{
+            background: "#ffffff",
+            borderRadius: "20px",
+            padding: "20px",
+            width: "300px",
+            maxHeight: "500px",
+            display: "flex",
+            flexDirection: "column",
+            boxShadow: "0px 8px 30px rgba(0, 0, 0, 0.2)",
+          }}>
+            <div style={{
+              flexGrow: 1,
+              overflowY: "auto",
+              marginBottom: "10px",
+              paddingRight: "10px",
+            }}>
+              {chatMessages.map((msg, index) => (
+                <div key={index} style={{
+                  background: index % 2 === 0 ? "#e0f7fa" : "#f1f8e9",
+                  padding: "8px 12px",
+                  borderRadius: "10px",
+                  marginBottom: "8px",
+                  alignSelf: "flex-start",
+                  maxWidth: "80%",
+                }}>
+                  {msg}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex" }}>
+              <input
+                type="text"
+                placeholder="Type a message..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 style={{
-                  backgroundColor: isSelected ? '#88c0d0' : isLastMove ? '#f7f761' : backgroundColor,
-                  width: '70px',
-                  height: '70px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s ease',
+                  flexGrow: 1,
+                  padding: "10px",
+                  borderRadius: "10px",
+                  border: "1px solid #ccc",
+                }}
+              />
+              <button
+                onClick={sendMessage}
+                style={{
+                  marginLeft: "10px",
+                  padding: "10px 15px",
+                  borderRadius: "10px",
+                  border: "none",
+                  backgroundColor: "#2196f3",
+                  color: "white",
+                  fontWeight: "bold",
+                  cursor: "pointer",
                 }}
               >
-                {piece && (
-                  <img
-                    src={`/pieces/${piece.color}${piece.type.toUpperCase()}.png`}
-                    alt=""
-                    style={{
-                      width: '55px',
-                      height: '55px',
-                      transition: 'transform 0.3s ease',
-                    }}
-                  />
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Bottom Player */}
-      <div style={{ marginTop: '10px', fontSize: '20px', fontWeight: 'bold' }}>
-        White ♔ - {formatTime(whiteTime)}
-      </div>
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
