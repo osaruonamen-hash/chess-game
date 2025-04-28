@@ -195,7 +195,7 @@ const ChessGame = () => {
                   borderRadius: "10px",
                   border: "none",
                   backgroundColor: "#2196f3",
-                  color: "white",
+                  color: "black",
                   fontWeight: "bold",
                   cursor: "pointer",
                 }}
