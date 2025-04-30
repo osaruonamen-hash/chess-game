@@ -14,16 +14,16 @@ const ChessGame = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [leaderboard, setLeaderboard] = useState([
-    { name: "Luke", score: 102 },
-    { name: "Peter", score: 97 },
-    { name: "John", score: 35 },
-    { name: "Matt", score: 70 },
-    { name: "Alvin", score: 52 },
+    { name: "Nail", score: 102 },
+    { name: "Emmanuel", score: 97 },
+    { name: "George", score: 35 },
+    { name: "Michal", score: 70 },
+    { name: "David", score: 52 },
   ]);
   const [gameHistory, setGameHistory] = useState([
-    { players: "Luke vs Elisa", moves: "1. d4 d5 2. c4 Nc6 3. Nc3 c5" },
-    { players: "John vs Figo", moves: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6" },
-    { players: "Peter vs Matt", moves: "1. d4 d5 2. c4 Nc6 3. Nc3 c5" },
+    { players: "Nail vs Emmanuel", moves: "1. d4 d5 2. c4 Nc6 3. Nc3 c5" },
+    { players: "Michal vs David", moves: "1. e4 e5 2. Nf3 Nc6 3. Bb5 a6" },
+    { players: "George vs Anton", moves: "1. d4 d5 2. c4 Nc6 3. Nc3 c5" },
   ]);
 
   const joinGame = (room) => {
