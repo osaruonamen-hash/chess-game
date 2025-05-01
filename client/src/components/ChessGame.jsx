@@ -266,8 +266,6 @@ const ChessGame = () => {
     <option value="en">English 🇺🇸</option>
     <option value="es">Español 🇪🇸</option>
     <option value="pl">Polski 🇵🇱</option>
-    <option value="de">Deutsch 🇩🇪</option>
-    <option value="fr">Français 🇫🇷</option>
   </select>
 </div>
 
