@@ -1,0 +1,141 @@
+/* General styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1e1e1e;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Chess Game Section */
+.chess-board {
+  margin-top: 20px;
+}
+
+.chess-board button {
+  padding: 10px 20px;
+  background-color: #333;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chess-board button:hover {
+  background-color: #555;
+}
+
+/* Chat Section */
+.chat-container {
+  margin-top: 30px;
+  background-color: #333;
+  padding: 20px;
+  border-radius: 8px;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+.chat-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.chat-container li {
+  margin: 5px 0;
+  color: #f1f1f1;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #222;
+  color: white;
+}
+
+.chat-input:focus {
+  outline: none;
+  background-color: #333;
+}
+
+/* Leaderboard Section */
+.leaderboard-container {
+  margin-top: 40px;
+  background-color: #444;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.leaderboard-container h2 {
+  margin-bottom: 15px;
+}
+
+.leaderboard-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.leaderboard-list li {
+  background-color: #333;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  color: #f1f1f1;
+}
+
+.leaderboard-list li span {
+  font-weight: bold;
+}
+
+/* Game History Section */
+.history-container {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #333;
+  border-radius: 8px;
+}
+
+.history-container h3 {
+  margin-bottom: 10px;
+}
+
+.history-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.history-list li {
+  background-color: #444;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+  color: #f1f1f1;
+}
+
+/* Buttons */
+.button {
+  background-color: #444;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: none;
+}
+
+.button:hover {
+  background-color: #555;
+}
+
+.button:focus {
+  outline: none;
+}
