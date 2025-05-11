@@ -23,8 +23,7 @@ app.use(express.json());
 
 // MongoDB Connection Setup
 mongoose.connect(
-  "mongodb+srv://vladimirehigiator8:x6IFb5pDWc1vq6af@cluster0.lvycxd0.mongodb.net/chessDB?retryWrites=true&w=majority&appName=Cluster0",
-  { useNewUrlParser: true, useUnifiedTopology: true }
+  "mongodb+srv://vladimirehigiator8:1FHJI9QjLDdoFBMv@cluster0.lvycxd0.mongodb.net/chessDB?retryWrites=true&w=majority&appName=Cluster0"
 )
 .then(() => console.log("✅ MongoDB connected successfully"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
